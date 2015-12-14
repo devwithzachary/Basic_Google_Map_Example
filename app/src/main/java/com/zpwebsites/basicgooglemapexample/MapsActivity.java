@@ -1,8 +1,15 @@
 package com.zpwebsites.basicgooglemapexample;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -10,14 +17,18 @@ import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -66,7 +77,59 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         centerMapOnMyLocation();
 
+        plotMarkerWithDefaultPin();
+        plotMarkerWithCustomImage();
+        plotMarkerWithCanvas();
     }
+
+    private void plotMarkerWithDefaultPin(){
+        LatLng position = new LatLng(53.779558, -4.042969);
+        MarkerOptions markerOption = new MarkerOptions().position(position);
+
+        markerOption.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        /*markerOption.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+        markerOption.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+        markerOption.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+        markerOption.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+        markerOption.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));*/
+
+        markerOption.title("Marker with default Pin");
+        mMap.addMarker(markerOption);
+    }
+
+    private void plotMarkerWithCustomImage(){
+        LatLng position = new LatLng(53.784426, -1.735840);
+        MarkerOptions markerOption = new MarkerOptions().position(position);
+
+        markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
+
+        markerOption.title("Marker with custom image");
+        mMap.addMarker(markerOption);
+    }
+
+    private void plotMarkerWithCanvas(){
+        LatLng position = new LatLng(53.209322, -3.405762);
+        MarkerOptions markerOption = new MarkerOptions().position(position);
+
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        Bitmap bmp = Bitmap.createBitmap(80, 80, conf);
+        Canvas canvas1 = new Canvas(bmp);
+
+        Paint color = new Paint();
+        color.setTextSize(35);
+        color.setColor(Color.BLACK);
+
+        canvas1.drawBitmap(BitmapFactory.decodeResource(getResources(),
+                R.drawable.ic_launcher), 0,0, color);
+
+        canvas1.drawText("User Name!", 30, 40, color);
+
+        markerOption.icon(BitmapDescriptorFactory.fromBitmap(bmp));
+
+        markerOption.title("Marker with canvas");
+        mMap.addMarker(markerOption);
+    }
+
 
     private void centerMapOnMyLocation() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
